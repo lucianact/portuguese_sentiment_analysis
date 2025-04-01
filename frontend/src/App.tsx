@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [text, setText] = useState("");
+  const [prediction, setPrediction] = useState<null | number>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPrediction(null); // reset
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text })
+      });
+
+      const data = await response.json();
+      setPrediction(data.prediction);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
+      <h1>Sentiment Checker</h1>
+      <form onSubmit={handleSubmit}>
+        <textarea
+          rows={4}
+          cols={40}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Type a message here..."
+        />
+        <br />
+        <button type="submit">Analyze Sentiment</button>
+      </form>
+
+      {prediction !== null && (
+        <p style={{ marginTop: "1rem" }}>
+          Sentiment: <strong>{prediction === 1 ? "Positive" : "Negative"}</strong>
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
