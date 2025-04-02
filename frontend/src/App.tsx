@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css"; // make sure you're importing your CSS!
 
 function App() {
   const [text, setText] = useState("");
@@ -25,17 +26,15 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
+    <div className="app">
       <h1>Sentiment Checker</h1>
-      <form onSubmit={handleSubmit}>
+
+      <form className="input-container" onSubmit={handleSubmit}>
         <textarea
-          rows={4}
-          cols={40}
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message here..."
         />
-        <br />
         <button type="submit">Analyze Sentiment</button>
       </form>
 
