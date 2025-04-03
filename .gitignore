@@ -3,6 +3,7 @@ venv/
 *.pyc
 __pycache__/
 *.pkl
+.env
 
 # Data (optional — remove if you want to version cleaned datasets)
 *.csv
