@@ -1,62 +1,57 @@
-=> Portuguese Sentiment Analysis
-This is a full-stack web application that performs sentiment analysis on text inputs in Portuguese, that I've built to explore NLP, full-stack deployment, and user feedback workflows.
+# Portuguese Sentiment Analysis
 
-=> The app:
-1. Allows users to enter a text (in Portuguese) and get a sentiment prediction (Positive, Negative, Neutral, Sarcastic)
-2. Allows users to provide feedback on the model’s prediction to improve future models
-3. Collects user feedback and stores for future training iterations
+This is a full-stack web application that performs sentiment analysis on text inputs in Portuguese.  
+Built to explore NLP, full-stack deployment, and user feedback workflows.
 
+## Features
 
-=> Tech Stack
-- Frontend: React + Vite + TypeScript
-- Backend: Flask + Flask-CORS                    
-- ML Model: Scikit-learn (TF-IDF + Logistic Regression)
-- Database: SQLite (local) / PostgreSQL (via Render)
+1. Enter a text and get a sentiment prediction (Positive, Negative, Neutral, Sarcastic)
+2. Provide feedback to improve future models
+3. Store feedback for retraining
 
+## Tech Stack
 
-=> Project Structure
+- **Frontend:** React + Vite + TypeScript  
+- **Backend:** Flask + Flask-CORS  
+- **Model:** Scikit-learn (TF-IDF + Logistic Regression)  
+- **Database:** SQLite (local), PostgreSQL (Render)
 
+## Project Structure
+
+<pre>
 backend/
-├── app.py               # Main Flask app
+├── app.py
 ├── config/
-│   └── db.py            # SQLAlchemy setup
+│   └── db.py
 ├── data/
 │   ├── tfidf_vectorizer.pkl
 │   └── sentiment_model.pkl
 ├── models/
-│   └── feedback.py      # Feedback SQLAlchemy model
+│   └── feedback.py
 ├── routes/
-│   ├── feedback.py      # Feedback API route
-│   └── predict.py       # Prediction API route
-└── requirements.txt     # Python dependencies
+│   ├── feedback.py
+│   └── predict.py
+└── requirements.txt
 
 frontend/
-├── index.html           # Entry HTML
+├── index.html
 ├── src/
-│   └── App.tsx          # Main React component
-│   └── index.css        # Styles
-└── vite.config.mts      # Vite config
+│   ├── App.tsx
+│   └── index.css
+└── vite.config.mts
+</pre>
 
+## Running Locally
 
-=> Running Locally:
-
-1. Backend Setup (Flask)
+```bash
+# Backend
 cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python app.py
 
-2. Frontend Setup (React + Vite)
+# Frontend
 cd frontend
 npm install
 npm run dev
-Visit http://localhost:5173
-
-
-=> TODO / Roadmap
-- Improve sarcasm detection with BERT
-
-
-
-
