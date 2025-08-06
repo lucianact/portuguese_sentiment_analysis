@@ -1,3 +1,8 @@
+# This script is to clean my original dataset before training the model.
+# It loads the raw tweets, removes the noise (like links, @mentions, hashtags, stopwords, etc),
+# and saves a cleaned version I can actually use to train the model later.
+# It doesn’t train anything — just cleans. I only run it when I update or replace the original dataset.
+
 # ───────────────────────────────────────
 # Imports
 # ───────────────────────────────────────

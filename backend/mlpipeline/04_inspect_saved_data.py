@@ -1,3 +1,8 @@
+# Just a quick script to load and peek into the model + tf-idf stuff.
+# Helps me see what’s actually being learned (or not).
+# Mainly here to check what the vectorizer is doing and how the data looks after being processed.
+# Not used in the actual app — just for my own brain clarity.
+
 import pickle
 
 def inspect_pickle(path, name):

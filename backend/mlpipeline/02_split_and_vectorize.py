@@ -1,3 +1,8 @@
+# This script takes my cleaned tweets and turns them into numbers using TF-IDF.
+# It splits the data into train/test, vectorizes both, and saves everything as .pkl files.
+# These are the files my model will train on next — this step just preps them.
+# I only run this if I change the dataset or want to tweak how TF-IDF works.
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer

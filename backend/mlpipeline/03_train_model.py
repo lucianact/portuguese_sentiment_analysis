@@ -1,3 +1,8 @@
+# This is where the model actually gets trained.
+# I’m loading the already vectorized text + labels, training a logistic regression model,
+# checking how well it performs, and saving it to a .pkl file for later use (like in the app).
+# Only need to run this if I change the dataset or want to retrain with different settings.
+
 import pickle
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
