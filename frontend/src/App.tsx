@@ -71,11 +71,11 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Sentiment Analysis</h1>
+      <h1>Portuguese Sentiment Analysis</h1>
 
       <form className="input-container" onSubmit={handleSubmit}>
         <textarea
-          placeholder="Type a message..."
+          placeholder="Type a message in Portuguese..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />

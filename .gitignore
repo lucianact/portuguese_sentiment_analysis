@@ -3,11 +3,15 @@ venv/
 *.pyc
 __pycache__/
 *.pkl
+*.db
 .env
+.env.*
 
-# Data (optional — remove if you want to version cleaned datasets)
+# Data
 *.csv
 *.tsv
+!data/sample/cleaned_dataset.csv
+instance/
 
 # Jupyter Notebook Checkpoints
 .ipynb_checkpoints/
@@ -29,6 +33,7 @@ lerna-debug.log/
 !.vscode/extensions.json
 .idea/
 .DS_Store
+.AppleDouble
 *.suo
 *.ntvs*
 *.njsproj
