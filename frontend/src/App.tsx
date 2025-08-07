@@ -26,7 +26,7 @@ function App() {
     };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/feedback`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ function App() {
     setUserSaidIncorrect(false);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/predict`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
