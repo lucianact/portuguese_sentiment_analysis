@@ -52,6 +52,13 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // prevent empty input submission
+    if (!input.trim()) {
+      setStatusMessage("Please enter some text.");
+      return;
+    }
+
     setPrediction(null);
     setShowFeedback(false);
     setFeedbackSubmitted(false);
@@ -60,7 +67,7 @@ function App() {
 
     // show message only if API not woken up yet
     if (!apiWokenUp) {
-      setStatusMessage("Waking up API... please hang in there! 🐢");
+      setStatusMessage("Waking up API (using the free version), please hang in there! 🐢");
     }
 
     try {
@@ -91,7 +98,7 @@ function App() {
 
       {/* show status message */}
       {statusMessage && (
-        <p style={{ textAlign: "center", marginTop: "1rem", color: "#888" }}>
+        <p style={{ textAlign: "center", marginTop: "1rem", color: "orange"}}>
           {statusMessage}
         </p>
       )}
