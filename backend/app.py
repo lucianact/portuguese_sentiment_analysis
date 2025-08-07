@@ -12,7 +12,7 @@ from routes.feedback import feedback_bp
 import pickle
 
 app = Flask(__name__)
-CORS(app, origins="http://localhost:5173")
+CORS(app, origins="*")
 
 
 # Load env config

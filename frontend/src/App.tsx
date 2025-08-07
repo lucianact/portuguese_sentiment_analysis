@@ -34,6 +34,8 @@ function App() {
         body: JSON.stringify(payload),
       });
 
+      console.log("FEEDBACK RESPONSE:", response); // debug log
+
       const data = await response.json();
       console.log("Feedback saved:", data.message);
       setFeedbackSubmitted(true);
@@ -60,6 +62,8 @@ function App() {
         },
         body: JSON.stringify({ text: input }),
       });
+
+      console.log("PREDICT RESPONSE:", response); // debug log
 
       const data = await response.json();
       setPrediction(data.prediction);
