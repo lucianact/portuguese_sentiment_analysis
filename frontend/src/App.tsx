@@ -9,7 +9,11 @@ function App() {
   const [correctSentiment, setCorrectSentiment] = useState("");
   const [userSaidIncorrect, setUserSaidIncorrect] = useState(false);
 
-  // Mapping UI label strings to model-ready numeric labels
+  // for waking up the API on first request
+  const [apiWokenUp, setApiWokenUp] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(""); 
+
+  // mapping UI label strings to model-ready numeric labels
   const labelMap: Record<string, number> = {
     negative: 0,
     positive: 1,
@@ -54,6 +58,11 @@ function App() {
     setCorrectSentiment("");
     setUserSaidIncorrect(false);
 
+    // show message only if API not woken up yet
+    if (!apiWokenUp) {
+      setStatusMessage("Waking up API... please hang in there! 🐢");
+    }
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/predict`, {
         method: "POST",
@@ -68,14 +77,24 @@ function App() {
       const data = await response.json();
       setPrediction(data.prediction);
       setShowFeedback(true);
+      setStatusMessage(""); // clear after first response
+      setApiWokenUp(true); // flag as awake
     } catch (error) {
       console.error("Error:", error);
+      setStatusMessage("Something went wrong. Try again?");
     }
   };
 
   return (
     <div className="app">
       <h1>Portuguese Sentiment Analysis</h1>
+
+      {/* show status message */}
+      {statusMessage && (
+        <p style={{ textAlign: "center", marginTop: "1rem", color: "#888" }}>
+          {statusMessage}
+        </p>
+      )}
 
       <form className="input-container" onSubmit={handleSubmit}>
         <textarea
