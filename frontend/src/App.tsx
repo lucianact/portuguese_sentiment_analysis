@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "./index.css";
-import { franc } from "franc"; //checks pt language
 
 function App() {
   const [input, setInput] = useState("");
@@ -56,13 +55,6 @@ function App() {
     // prevent empty input submission
     if (!input.trim()) {
       setStatusMessage("⚠️ Please enter some text.");
-      return;
-    }
-
-    // check input length and language
-    const detectedLang = franc(input);
-    if (input.length < 6 || (detectedLang !== "por" && detectedLang !== "und")) {
-      setStatusMessage("⚠️ This doesn't look like Portuguese or is too short. Try again?");
       return;
     }
 
