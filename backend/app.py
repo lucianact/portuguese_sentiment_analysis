@@ -36,6 +36,11 @@ app.config["MODEL"] = model
 app.register_blueprint(predict_bp)
 app.register_blueprint(feedback_bp)
 
+# Auto-create tables in production
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 # Run app
 if __name__ == "__main__":
     with app.app_context():
