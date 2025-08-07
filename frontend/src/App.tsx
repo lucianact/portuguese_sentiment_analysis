@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./index.css";
+import { franc } from "franc"; //checks pt language
 
 function App() {
   const [input, setInput] = useState("");
@@ -8,10 +9,9 @@ function App() {
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [correctSentiment, setCorrectSentiment] = useState("");
   const [userSaidIncorrect, setUserSaidIncorrect] = useState(false);
-
+  const [statusMessage, setStatusMessage] = useState(""); 
   // for waking up the API on first request
   const [apiWokenUp, setApiWokenUp] = useState(false);
-  const [statusMessage, setStatusMessage] = useState(""); 
 
   // mapping UI label strings to model-ready numeric labels
   const labelMap: Record<string, number> = {
@@ -21,7 +21,7 @@ function App() {
     sarcastic: 3,
   };
 
-  // Send feedback to the backend
+  // send feedback to the backend
   const sendFeedback = async (correctLabel: number) => {
     const payload = {
       text: input,
@@ -44,7 +44,7 @@ function App() {
       console.log("Feedback saved:", data.message);
       setFeedbackSubmitted(true);
       setPrediction(null);
-      setInput(""); // Clear input after feedback
+      setInput(""); // clear input after feedback
     } catch (error) {
       console.error("Error sending feedback:", error);
     }
@@ -55,7 +55,14 @@ function App() {
 
     // prevent empty input submission
     if (!input.trim()) {
-      setStatusMessage("Please enter some text.");
+      setStatusMessage("⚠️ Please enter some text.");
+      return;
+    }
+
+    // check input length and language
+    const detectedLang = franc(input);
+    if (input.length < 6 || (detectedLang !== "por" && detectedLang !== "und")) {
+      setStatusMessage("⚠️ This doesn't look like Portuguese or is too short. Try again?");
       return;
     }
 
@@ -84,7 +91,7 @@ function App() {
       const data = await response.json();
       setPrediction(data.prediction);
       setShowFeedback(true);
-      setStatusMessage(""); // clear after first response
+      setStatusMessage("");
       setApiWokenUp(true); // flag as awake
     } catch (error) {
       console.error("Error:", error);
