@@ -219,8 +219,8 @@ textarea::placeholder {
     Loading Spinner
 -------------------------------------------------- */
 .spinner {
-  border: 4px solid #f3f3f3;       
-  border-top: 4px solid #555;      
+  border: 4px solid #5852e3;;       
+  border-top: 4px solid #ffffff;      
   border-radius: 50%;
   width: 32px;
   height: 32px;

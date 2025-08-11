@@ -141,7 +141,7 @@ function App() {
       {isLoading && (
         <div className="prediction-output">
           <div className="spinner" />
-          <p className="loading-text">Analyzing sentiment...</p>
+          {/* <p className="loading-text">Analyzing sentiment...</p> */}
         </div>
       )}
 
