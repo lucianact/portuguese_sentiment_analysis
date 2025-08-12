@@ -1,6 +1,23 @@
 import { useState } from "react";
 import "./index.css";
 
+function isGibberish(text: string) {
+  // Simple Portuguese-friendly vowel ratio heuristic
+  const vowels = "aeiouáéíóúàâêôãõ";
+  const letters = text
+    .toLowerCase()
+    .split("")
+    .filter((c) => /[a-záéíóúàâêôãõ]/i.test(c));
+
+  if (letters.length === 0) return true;
+
+  const vowelCount = letters.filter((c) => vowels.includes(c)).length;
+  const vowelRatio = vowelCount / letters.length;
+
+  // Tune this threshold if you want stricter/looser filtering
+  return vowelRatio < 0.25;
+}
+
 function App() {
   // ----------------------------------------
   // State Management
@@ -9,9 +26,7 @@ function App() {
   const [prediction, setPrediction] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-  const [correctSentiment, setCorrectSentiment] = useState("");
-  const [userSaidIncorrect, setUserSaidIncorrect] = useState(false);
-  const [statusMessage, setStatusMessage] = useState(""); 
+  const [statusMessage, setStatusMessage] = useState("");
   const [apiWokenUp, setApiWokenUp] = useState(false); // flag for cold-start backend
   const [isLoading, setIsLoading] = useState(false);   // loading state for spinner/UI
 
@@ -38,21 +53,16 @@ function App() {
     try {
       await fetch(`${import.meta.env.VITE_API_BASE_URL}/feedback`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      // console.log("FEEDBACK RESPONSE:", response); // debug log
-
-      // const data = await response.json();
-      // console.log("Feedback saved:", data.message);
       setFeedbackSubmitted(true);
       setPrediction(null);
       setInput(""); // clear input after feedback
-    } catch (error) {
-      // console.error("Error sending feedback:", error);
+      setShowFeedback(false);
+      setStatusMessage("✅ Feedback received. Thanks!");
+    } catch {
       setStatusMessage("⚠️ Feedback could not be submitted. Try again later.");
     }
   };
@@ -63,49 +73,56 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // input validation
-    if (!input.trim()) {
+    // Basic validation
+    const trimmed = input.trim();
+    if (!trimmed) {
       setStatusMessage("⚠️ Please enter some text.");
       return;
     }
 
-    if (input.trim().length < 6) {
+    if (trimmed.length < 6) {
       setStatusMessage("⚠️ Text is too short for accurate analysis. Try writing a full sentence.");
       return;
     }
 
-    // reset state before sending
+    // Gibberish check
+    if (isGibberish(trimmed)) {
+      setStatusMessage("⚠️ Text looks like gibberish. Please write in proper Portuguese.");
+      return;
+    }
+
+    // Reset state before sending
     setPrediction(null);
     setShowFeedback(false);
     setFeedbackSubmitted(false);
-    setCorrectSentiment("");
-    setUserSaidIncorrect(false);
-
-    if (!apiWokenUp) {
-      setStatusMessage("Waking up API (using the free version), please hang in there! 🐢");
-    }
+    setStatusMessage((prev) =>
+      !apiWokenUp ? "Waking up API (using the free version), please hang in there! 🐢" : prev
+    );
 
     setIsLoading(true);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/predict`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: input }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmed }),
       });
 
-      // console.log("PREDICT RESPONSE:", response); // debug log
-
       const data = await response.json();
-      setPrediction(data.prediction);
+
+      if (!response.ok) {
+        // Backend might return errors like { error: "..." }
+        setStatusMessage(data?.error ?? "⚠️ Something went wrong. Try again?");
+        return;
+      }
+
+      // Expecting data.prediction to be 0|1|2|3 from your backend
+      setPrediction(typeof data.prediction === "number" ? data.prediction : null);
       setShowFeedback(true);
       setStatusMessage("");
       setApiWokenUp(true); // only set once
-    } catch (error) {
-      // console.error("Error:", error);
-      setStatusMessage("Something went wrong. Try again?");
+    } catch {
+      setStatusMessage("⚠️ Something went wrong. Try again?");
     } finally {
       setIsLoading(false);
     }
@@ -119,11 +136,7 @@ function App() {
       <h1>Portuguese Sentiment Analysis</h1>
 
       {/* Status message display (warnings/errors/info) */}
-      {statusMessage && (
-        <p className="status-message">
-          {statusMessage}
-        </p>
-      )}
+      {statusMessage && <p className="status-message">{statusMessage}</p>}
 
       {/* Input form */}
       <form className="input-container" onSubmit={handleSubmit}>
@@ -131,6 +144,7 @@ function App() {
           placeholder="Type a message in Portuguese..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          aria-label="Portuguese text input"
         />
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Analyzing..." : "Analyze Sentiment"}
@@ -141,7 +155,6 @@ function App() {
       {isLoading && (
         <div className="prediction-output">
           <div className="spinner" />
-          {/* <p className="loading-text">Analyzing sentiment...</p> */}
         </div>
       )}
 
@@ -170,54 +183,46 @@ function App() {
               type="button"
               onClick={() => {
                 if (prediction !== null) {
-                  sendFeedback(prediction); // send confirmed feedback
+                  sendFeedback(prediction); // user confirmed model's prediction
                 }
               }}
             >
               Yes
             </button>
 
-            <select 
+            <select
               className="feedback-select"
               defaultValue=""
               onChange={(e) => {
-                const selected = e.target.value;
-                const validLabels = ["positive", "negative", "neutral", "sarcastic"];
-                
-                if (!validLabels.includes(selected)) {
+                const selected = e.target.value as keyof typeof labelMap | "";
+                if (!selected) return;
+
+                const numericLabel = labelMap[selected];
+                if (numericLabel === undefined) {
                   setStatusMessage("⚠️ Invalid selection. Please choose a valid sentiment.");
                   return;
                 }
 
-                const numericLabel = labelMap[selected];
-                if (numericLabel === undefined) {
-                  setStatusMessage("⚠️ Something went wrong. Please try again.");
-                  return;
-                }
-
-              sendFeedback(numericLabel); // immediately send feedback
-            }}
-          >
-            <option value="" disabled>
-              No. Select correct sentiment
-            </option>
-            <option value="positive">Positive</option>
-            <option value="negative">Negative</option>
-            <option value="neutral">Neutral</option>
-            <option value="sarcastic">Sarcastic/Ironic</option>
-          </select>
+                // Immediately send feedback with user's chosen correction
+                sendFeedback(numericLabel);
+              }}
+              aria-label="Select correct sentiment"
+            >
+              <option value="" disabled>
+                No. Select correct sentiment
+              </option>
+              <option value="positive">Positive</option>
+              <option value="negative">Negative</option>
+              <option value="neutral">Neutral</option>
+              <option value="sarcastic">Sarcastic/Ironic</option>
+            </select>
+          </div>
         </div>
-      </div>
-    )}
-
-          
-
+      )}
 
       {/* Feedback confirmation */}
       {feedbackSubmitted && (
-        <p className="feedback-success">
-          ✅ Feedback received. Thanks!
-        </p>
+        <p className="feedback-success">✅ Feedback received. Thanks!</p>
       )}
     </main>
   );
