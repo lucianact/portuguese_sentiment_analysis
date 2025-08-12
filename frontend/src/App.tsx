@@ -53,6 +53,12 @@ function App() {
       setShowFeedback(false);
       setStatusMessage("✅ Feedback received. Thanks!");
       setStatusType("feedback");
+
+      // Hide message after 3 seconds
+      setTimeout(() => {
+      setStatusMessage("");
+      setStatusType("default");
+    }, 3000);
     } catch {
       setStatusMessage("⚠️ Feedback could not be submitted. Try again later.");
       setStatusType("default");
