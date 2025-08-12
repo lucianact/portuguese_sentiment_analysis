@@ -163,7 +163,7 @@ function App() {
       setPrediction(null);
       setInput("");
       setShowFeedback(false);
-      setStatusMessage("Feedback received. Thanks!");
+      setStatusMessage("✅ Feedback received. Thanks!");
       setStatusType("feedback");
 
       // Auto-hide after 3s
@@ -173,7 +173,7 @@ function App() {
       }, 3000);
       setHideMsgTimer(id);
     } else {
-      setStatusMessage(error || "Feedback could not be submitted. Try again later.");
+      setStatusMessage(error || "⚠️ Feedback could not be submitted. Try again later.");
       setStatusType("default");
     }
 
@@ -194,17 +194,17 @@ function App() {
 
     // Basic validation (length and gibberish)
     if (!trimmed) {
-      setStatusMessage("Please enter some text.");
+      setStatusMessage("⚠️ Please enter some text.");
       setStatusType("default");
       return;
     }
     if (trimmed.length < 6) {
-      setStatusMessage("Text is too short for accurate analysis. Try writing a full sentence.");
+      setStatusMessage("⚠️ Text is too short for accurate analysis. Try writing a full sentence.");
       setStatusType("default");
       return;
     }
     if (isGibberish(trimmed)) {
-      setStatusMessage("Text looks like gibberish. Please write in proper Portuguese.");
+      setStatusMessage("⚠️ Text looks like gibberish. Please write in proper Portuguese.");
       setStatusType("default");
       return;
     }
@@ -230,7 +230,7 @@ function App() {
     );
 
     if (!ok) {
-      setStatusMessage(error || (data && (data.error || data.message)) || "Something went wrong. Try again?");
+      setStatusMessage(error || (data && (data.error || data.message)) || "⚠️ Something went wrong. Try again?");
       setStatusType("default");
       setIsSubmitting(false);
       // setIsLoading(false);
