@@ -9,6 +9,7 @@ from config.db import db, DATABASE_URL
 from models import feedback  # Ensures SQLAlchemy sees the model
 from routes.predict import predict_bp
 from routes.feedback import feedback_bp
+from routes.health import health_bp 
 import pickle
 
 app = Flask(__name__)
@@ -18,6 +19,11 @@ CORS(app, resources={r"/*": {"origins": [
     "https://portuguese-sentiment-analysis.onrender.com"
 ]}})
 
+# ---------------------------
+# Register always-on lightweight routes first
+# ---------------------------
+# /healthz is used by an external cron to keep the service awake.
+app.register_blueprint(health_bp)
 
 # ---------------------------
 # Database configuration
