@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./index.css";
 
 function isGibberish(text: string) {
-  // Simple Portuguese-friendly vowel ratio heuristic
   const vowels = "aeiouáéíóúàâêôãõ";
   const letters = text
     .toLowerCase()
@@ -14,25 +13,19 @@ function isGibberish(text: string) {
   const vowelCount = letters.filter((c) => vowels.includes(c)).length;
   const vowelRatio = vowelCount / letters.length;
 
-  // Tune this threshold if you want stricter/looser filtering
   return vowelRatio < 0.25;
 }
 
 function App() {
-  // ----------------------------------------
-  // State Management
-  // ----------------------------------------
   const [input, setInput] = useState("");
   const [prediction, setPrediction] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
-  const [apiWokenUp, setApiWokenUp] = useState(false); // flag for cold-start backend
-  const [isLoading, setIsLoading] = useState(false);   // loading state for spinner/UI
+  const [statusType, setStatusType] = useState<"default" | "feedback">("default");
+  const [apiWokenUp, setApiWokenUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // ----------------------------------------
-  // Label Mapping (string -> numeric)
-  // ----------------------------------------
   const labelMap: Record<string, number> = {
     negative: 0,
     positive: 1,
@@ -40,9 +33,6 @@ function App() {
     sarcastic: 3,
   };
 
-  // ----------------------------------------
-  // Send Feedback to Backend
-  // ----------------------------------------
   const sendFeedback = async (correctLabel: number) => {
     const payload = {
       text: input,
@@ -59,45 +49,47 @@ function App() {
 
       setFeedbackSubmitted(true);
       setPrediction(null);
-      setInput(""); // clear input after feedback
+      setInput("");
       setShowFeedback(false);
       setStatusMessage("✅ Feedback received. Thanks!");
+      setStatusType("feedback");
     } catch {
       setStatusMessage("⚠️ Feedback could not be submitted. Try again later.");
+      setStatusType("default");
     }
   };
 
-  // ----------------------------------------
-  // Handle Sentiment Submit
-  // ----------------------------------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
     const trimmed = input.trim();
     if (!trimmed) {
       setStatusMessage("⚠️ Please enter some text.");
+      setStatusType("default");
       return;
     }
 
     if (trimmed.length < 6) {
       setStatusMessage("⚠️ Text is too short for accurate analysis. Try writing a full sentence.");
+      setStatusType("default");
       return;
     }
 
-    // Gibberish check
     if (isGibberish(trimmed)) {
       setStatusMessage("⚠️ Text looks like gibberish. Please write in proper Portuguese.");
+      setStatusType("default");
       return;
     }
 
-    // Reset state before sending
     setPrediction(null);
     setShowFeedback(false);
     setFeedbackSubmitted(false);
     setStatusMessage((prev) =>
-      !apiWokenUp ? "Waking up API (using the free version), please hang in there! 🐢" : prev
+      !apiWokenUp
+        ? "Waking up API (using the free version), please hang in there! 🐢"
+        : prev
     );
+    setStatusType("default");
 
     setIsLoading(true);
 
@@ -111,34 +103,38 @@ function App() {
       const data = await response.json();
 
       if (!response.ok) {
-        // Backend might return errors like { error: "..." }
         setStatusMessage(data?.error ?? "⚠️ Something went wrong. Try again?");
+        setStatusType("default");
         return;
       }
 
-      // Expecting data.prediction to be 0|1|2|3 from your backend
       setPrediction(typeof data.prediction === "number" ? data.prediction : null);
       setShowFeedback(true);
       setStatusMessage("");
-      setApiWokenUp(true); // only set once
+      setStatusType("default");
+      setApiWokenUp(true);
     } catch {
       setStatusMessage("⚠️ Something went wrong. Try again?");
+      setStatusType("default");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ----------------------------------------
-  // Component Rendering
-  // ----------------------------------------
   return (
     <main className="app" role="main">
       <h1>Portuguese Sentiment Analysis</h1>
 
-      {/* Status message display (warnings/errors/info) */}
-      {statusMessage && <p className="status-message">{statusMessage}</p>}
+      {statusMessage && (
+        <p
+          className={`status-message ${
+            statusType === "feedback" ? "feedback-status" : ""
+          }`}
+        >
+          {statusMessage}
+        </p>
+      )}
 
-      {/* Input form */}
       <form className="input-container" onSubmit={handleSubmit}>
         <textarea
           placeholder="Type a message in Portuguese..."
@@ -151,14 +147,12 @@ function App() {
         </button>
       </form>
 
-      {/* Loading spinner + message */}
       {isLoading && (
         <div className="prediction-output">
           <div className="spinner" />
         </div>
       )}
 
-      {/* Prediction result display */}
       {prediction !== null && (
         <div className="prediction-output">
           <p>
@@ -174,7 +168,6 @@ function App() {
         </div>
       )}
 
-      {/* Ask for feedback */}
       {showFeedback && !feedbackSubmitted && (
         <div className="input-container feedback-block">
           <p className="bold-text">Was this prediction correct?</p>
@@ -183,7 +176,7 @@ function App() {
               type="button"
               onClick={() => {
                 if (prediction !== null) {
-                  sendFeedback(prediction); // user confirmed model's prediction
+                  sendFeedback(prediction);
                 }
               }}
             >
@@ -200,10 +193,10 @@ function App() {
                 const numericLabel = labelMap[selected];
                 if (numericLabel === undefined) {
                   setStatusMessage("⚠️ Invalid selection. Please choose a valid sentiment.");
+                  setStatusType("default");
                   return;
                 }
 
-                // Immediately send feedback with user's chosen correction
                 sendFeedback(numericLabel);
               }}
               aria-label="Select correct sentiment"
@@ -218,11 +211,6 @@ function App() {
             </select>
           </div>
         </div>
-      )}
-
-      {/* Feedback confirmation */}
-      {feedbackSubmitted && (
-        <p className="feedback-success">✅ Feedback received. Thanks!</p>
       )}
     </main>
   );
