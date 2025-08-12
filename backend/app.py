@@ -19,14 +19,21 @@ CORS(app, resources={r"/*": {"origins": [
 ]}})
 
 
-# Load env config
+# ---------------------------
+# Database configuration
+# ---------------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Quick sanity log
+# print(f"Using DB URL: {app.config['SQLALCHEMY_DATABASE_URI']}", flush=True)
 
 # Initialize DB
 db.init_app(app)
 
-# Load ML model + vectorizer
+# ---------------------------
+# Load ML artifacts (vectorizer + model)
+# ---------------------------
 with open("data/tfidf_vectorizer.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
@@ -40,12 +47,13 @@ app.config["MODEL"] = model
 app.register_blueprint(predict_bp)
 app.register_blueprint(feedback_bp)
 
-# Auto-create tables in production
+
+# ---------------------------
+# Create tables once at import-time
+# ---------------------------
 with app.app_context():
     db.create_all()
 
-# Run app
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
+# Run app locally
+if __name__ == "__main__": 
     app.run(debug=True)
