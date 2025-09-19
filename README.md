@@ -14,31 +14,20 @@ Built to explore NLP, full-stack deployment, and user feedback workflows.
 - **Frontend:** React + Vite + TypeScript  
 - **Backend:** Flask + Flask-CORS  
 - **Model:** Scikit-learn (TF-IDF + Logistic Regression)  
-- **Database:** SQLite (local), PostgreSQL (Render)
+- **Database:** SQLite (local), PostgreSQL (Supabase)
 
 ## Project Structure
 
 <pre>
 backend/
-├── app.py
-├── config/
-│   └── db.py
-├── data/
-│   ├── tfidf_vectorizer.pkl
-│   └── sentiment_model.pkl
-├── models/
-│   └── feedback.py
-├── routes/
-│   ├── feedback.py
-│   └── predict.py
-└── requirements.txt
+├── app.py # Flask app entry point
+├── config/ # Database configuration
+├── mlpipeline/ # Preprocessing & training scripts
+├── routes/ # API endpoints
+└── models/ # Data models
 
 frontend/
-├── index.html
-├── src/
-│   ├── App.tsx
-│   └── index.css
-└── vite.config.mts
+└── src/ # React components & pages
 </pre>
 
 ## Running Locally
