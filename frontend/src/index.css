@@ -217,33 +217,127 @@ textarea::placeholder {
 }
 
 /* --------------------------------------------------
-    Loading Spinner — unused (API always warm)
+   Adjust app height so footer never overlaps
 -------------------------------------------------- */
-/*
-.spinner {
-  border: 4px solid #5852e3;       
-  border-top: 4px solid #797979;      
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto; 
+.app {
+  min-height: calc(100vh - 72px);
+  padding-bottom: 72px;
+
+  /* nudge everything up */
+  margin-top: -16px; /* about one finger width; */
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* --------------------------------------------------
+   Footer – match subnav look
+-------------------------------------------------- */
+.footer-links {
+  position: fixed;
+  left: 50%;
+  bottom: 48px;
+  transform: translateX(-50%);
+  display: flex;              
+  justify-content: center;     
+  align-items: center;
+  gap: .6rem;                  
+  font-weight: 600;            
+  font-size: 1rem;             
+  color: inherit;              /* follow theme (dark/light) */
 }
 
-.loading-text {
+.footer-links .divider {
+  opacity: .6;
+}
+
+.footer-links a {
+  text-decoration: none;       
+  color: inherit;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;  
+}
+
+/* -----------------------------------------
+   Article / Blog Style Pages
+----------------------------------------- */
+
+/* Outer wrapper to center the article content and leave space for the footer */
+.article-page {
+  display: flex;
+  justify-content: center;
+  padding: 56px 16px 96px; /* top | sides | bottom (footer space) */
+}
+
+/* Inner article column */
+.article {
+  max-width: 68ch;          
+  width: 100%;
+  line-height: 1.75;
+  font-size: 1.05rem;
+  color: inherit;
+}
+
+/* Headings */
+.article h1 {
+  font-size: clamp(1.8rem, 2.5vw + 1.2rem, 2.4rem);
+  line-height: 1.2;
+  margin: 0 0 0.75em;
   text-align: center;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: #555;
 }
-*/
 
-.bold-text {
+/* Under-title sub-nav (centered) */
+.article .subnav {
+  display: flex;               
+  justify-content: center;     
+  align-items: center;
+  gap: .6rem;
+  width: 100%;                 /* span the article width */
+  margin: .25rem auto 1.25rem; /* sit right under the H1 */
   font-weight: 600;
-  font-size: 1rem;
 }
+.article .subnav .divider {
+  opacity: .6;
+}
+@media (max-width: 480px) {
+  .article .subnav {
+    flex-wrap: wrap;           /* allow wrap on tiny screens */
+    row-gap: .25rem;
+  }
+}
+
+.article h2 {
+  font-size: clamp(1.25rem, 1.2vw + 1rem, 1.6rem);
+  margin: 2em 0 0.6em;
+}
+
+/* Paragraphs and lists */
+.article p {
+  margin: 0 0 1.1em;
+}
+
+.article ul,
+.article ol {
+  margin: 0 0 1.1em 1.25em;
+}
+
+.article li {
+  margin: 0.35em 0;
+}
+
+/* Links inside articles */
+.article a {
+  text-decoration: underline;
+  color: inherit;
+}
+
+/* simple loader */
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top-color: #7c4dff;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin: 12px auto 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
