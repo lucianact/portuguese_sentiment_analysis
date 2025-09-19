@@ -5,9 +5,9 @@ Built to explore NLP, full-stack deployment, and user feedback workflows.
 
 ## Features
 
-1. Enter a text and get a sentiment prediction (Positive, Negative, Neutral, Sarcastic)
-2. Provide feedback to improve future models
-3. Store feedback for retraining
+1. Enter a text and get a sentiment prediction
+2. User can provide feedback to improve future models
+3. Database stores feedback for retraining
 
 ## Tech Stack
 
